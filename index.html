@@ -188,6 +188,19 @@ tbody tr.row-cancelada .badge-red,tbody tr.row-cancelada .badge-amber,tbody tr.r
 .btn-add-user:hover{opacity:.88}.btn-add-user:disabled{opacity:.4;cursor:not-allowed}
 .add-user-msg{font-size:12px;margin-top:10px;font-family:var(--mono);display:none}
 .add-user-msg.ok{color:var(--green);display:block}.add-user-msg.err{color:var(--red);display:block}
+.role-select {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 5px;
+  color: var(--text);
+  font-size: 11px;
+  font-family: var(--mono);
+  padding: 4px 8px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color .15s;
+}
+.role-select:focus { border-color: var(--accent); }
 
 /* ── MODAL ── */
 #modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);z-index:500;display:none;align-items:center;justify-content:center}
@@ -765,27 +778,45 @@ function renderLogs(){
 
 /* ══ USUÁRIOS ══ */
 async function loadUsers(){
-  if(PROFILE.role!=='master') return;
+  if(PROFILE.role !== 'master') return;
   try{
-    const r=await fetch(SUPABASE_URL+'/rest/v1/profiles?select=*&order=created_at.asc',{headers:dbH()});
+    const r = await fetch(SUPABASE_URL + '/rest/v1/profiles?select=*&order=created_at.asc', { headers: dbH() });
     if(!r.ok) throw new Error(r.status);
-    const users=await r.json();
-    document.getElementById('users-count').textContent=users.length+' usuários';
-    const list=document.getElementById('users-list');
-    if(!users.length){list.innerHTML='<div class="empty">Nenhum usuário cadastrado.</div>';return;}
-    list.innerHTML=users.map(u=>{
-      const ini=(u.nome||u.email||'?').slice(0,2).toUpperCase();
-      const isSelf=u.id===PROFILE.id;
+    const users = await r.json();
+    document.getElementById('users-count').textContent = users.length + ' usuários';
+    const list = document.getElementById('users-list');
+
+    if(!users.length){
+      list.innerHTML = '<div class="empty">Nenhum usuário cadastrado.</div>';
+      return;
+    }
+
+    list.innerHTML = users.map(u => {
+      const ini = (u.nome||u.email||'?').slice(0,2).toUpperCase();
+      const isSelf = u.id === PROFILE.id;
       return `<div class="user-row">
         <div class="user-avatar-sm">${ini}</div>
         <div class="user-row-info">
           <div class="user-row-email">${u.email||'—'}</div>
           <div class="user-row-meta">${u.nome||''} · <span class="role-badge role-${u.role}">${u.role}</span></div>
         </div>
-        ${isSelf?'<span style="font-size:10px;color:var(--muted);font-family:var(--mono)">você</span>':`<button class="btn-remove" onclick="confirmRemove('${u.id}','${(u.email||''). replace(/'/g,"\'")}')">Remover</button>`}
+        <div style="display:flex;gap:6px;flex-shrink:0;align-items:center">
+          ${isSelf
+            ? '<span style="font-size:10px;color:var(--muted);font-family:var(--mono)">você</span>'
+            : `<select class="role-select" onchange="changeRole('${u.id}', this.value)">
+                 <option value="editor" ${u.role==='editor'?'selected':''}>editor</option>
+                 <option value="viewer" ${u.role==='viewer'?'selected':''}>viewer</option>
+               </select>
+               <button class="btn-remove" onclick="confirmRemove('${u.id}','${(u.email||'').replace(/'/g,"\\'")}')">Remover</button>`
+          }
+        </div>
       </div>`;
     }).join('');
-  }catch(e){showToast('Erro ao carregar usuários.','err');}
+
+  } catch(e) {
+    showToast('Erro ao carregar usuários.', 'err');
+    console.error(e);
+  }
 }
 
 async function addUser(){
@@ -846,6 +877,22 @@ async function removeUser(uid){
     if(!r.ok) throw new Error(r.status);
     showToast('Usuário removido com sucesso.','ok'); loadUsers();
   }catch(e){showToast('Erro ao remover usuário.','err');}
+}
+
+async function changeRole(userId, newRole) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}`, {
+      method: 'PATCH',
+      headers: dbH(),
+      body: JSON.stringify({ role: newRole })
+    });
+    if (!res.ok) throw new Error(res.status);
+    showToast('Perfil atualizado para ' + newRole, 'ok');
+    loadUsers();
+  } catch(e) {
+    showToast('Erro ao atualizar perfil.', 'err');
+    console.error(e);
+  }
 }
 
 /* ══ DASHBOARD HELPERS ══ */
