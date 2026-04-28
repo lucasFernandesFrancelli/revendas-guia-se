@@ -6,838 +6,413 @@
 <title>Painel de Revendas — Sempli / HostGuiase</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <style>
-  :root {
-    --bg: #0d0f14;
-    --surface: #13161d;
-    --surface2: #1a1e28;
-    --border: rgba(255,255,255,0.07);
-    --border2: rgba(255,255,255,0.12);
-    --text: #e8eaf0;
-    --muted: #6b7280;
-    --accent: #4f8ef7;
-    --accent-dim: rgba(79,142,247,0.12);
-    --red: #f05252;
-    --red-dim: rgba(240,82,82,0.12);
-    --amber: #f59e0b;
-    --amber-dim: rgba(245,158,11,0.12);
-    --green: #34d399;
-    --green-dim: rgba(52,211,153,0.10);
-    --blue-dim: rgba(79,142,247,0.10);
-    --font: 'DM Sans', sans-serif;
-    --mono: 'DM Mono', monospace;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    font-size: 14px;
-    line-height: 1.5;
-  }
+/* ── CSS VARIABLES ── */
+:root{--bg:#0d0f14;--surface:#13161d;--surface2:#1a1e28;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text:#e8eaf0;--muted:#6b7280;--accent:#4f8ef7;--accent-dim:rgba(79,142,247,0.12);--red:#f05252;--red-dim:rgba(240,82,82,0.12);--amber:#f59e0b;--amber-dim:rgba(245,158,11,0.12);--green:#34d399;--green-dim:rgba(52,211,153,0.10);--blue-dim:rgba(79,142,247,0.10);--font:"DM Sans",sans-serif;--mono:"DM Mono",monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5}
 
-  /* HEADER */
-  header {
-    border-bottom: 1px solid var(--border);
-    padding: 0 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 60px;
-    position: sticky;
-    top: 0;
-    background: rgba(13,15,20,0.92);
-    backdrop-filter: blur(12px);
-    z-index: 100;
-  }
-  .logo {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--muted);
-    letter-spacing: 0.04em;
-  }
-  .logo span { color: var(--accent); }
-  .header-right { display: flex; align-items: center; gap: 16px; }
-  .header-date {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-  }
-  .db-status {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-  }
-  .db-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--muted);
-    transition: background 0.3s;
-  }
-  .db-dot.connected { background: var(--green); }
-  .db-dot.error { background: var(--red); }
+/* ── LOGIN SCREEN ── */
+#screen-login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:40px 44px;width:100%;max-width:400px}
+.login-logo{font-family:var(--mono);font-size:13px;color:var(--muted);margin-bottom:32px;letter-spacing:.04em}
+.login-logo span{color:var(--accent)}
+.login-card h2{font-size:20px;font-weight:600;margin-bottom:6px;letter-spacing:-.02em}
+.login-card>p{font-size:13px;color:var(--muted);margin-bottom:28px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-weight:500}
+.field input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;transition:border-color .15s}
+.field input:focus{border-color:var(--accent)}
+.field input::placeholder{color:var(--muted)}
+.btn-primary{width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:14px;font-family:var(--font);font-weight:500;cursor:pointer;transition:opacity .15s;margin-top:4px}
+.btn-primary:hover{opacity:.88}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+#login-err{color:var(--red);font-size:12px;margin-top:12px;font-family:var(--mono);display:none}
+#login-err.show{display:block}
 
-  /* LAYOUT */
-  main { max-width: 1280px; margin: 0 auto; padding: 32px 32px 64px; }
+/* ── APP ── */
+#screen-app{display:none}
+#screen-app.show{display:block}
 
-  /* PAGE TITLE */
-  .page-title { margin-bottom: 28px; }
-  .page-title h1 {
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-  .page-title p { font-size: 13px; color: var(--muted); }
+/* ── HEADER ── */
+header{border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;background:rgba(13,15,20,0.93);backdrop-filter:blur(14px);z-index:200}
+.logo{font-family:var(--mono);font-size:13px;color:var(--muted);letter-spacing:.04em}
+.logo span{color:var(--accent)}
+.header-right{display:flex;align-items:center;gap:14px}
+.header-date{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.db-status{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.db-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);transition:background .3s}
+.db-dot.connected{background:var(--green)}
+.db-dot.error{background:var(--red)}
+.user-chip{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 12px 4px 7px}
+.user-avatar{width:22px;height:22px;border-radius:50%;background:var(--accent-dim);border:1px solid rgba(79,142,247,.3);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--accent);font-weight:700;flex-shrink:0}
+.role-badge{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.role-master{background:rgba(79,142,247,.15);color:var(--accent)}
+.role-editor{background:rgba(52,211,153,.12);color:var(--green)}
+.role-viewer{background:rgba(107,114,128,.15);color:var(--muted)}
+.btn-logout{padding:5px 12px;background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:11px;font-family:var(--mono);cursor:pointer;transition:all .15s}
+.btn-logout:hover{border-color:var(--red);color:var(--red)}
 
-  /* METRICS */
-  .metrics {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 12px;
-    margin-bottom: 28px;
-  }
-  .metric {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px 20px;
-    position: relative;
-    overflow: hidden;
-  }
-  .metric::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-  }
-  .metric.total::before { background: var(--accent); }
-  .metric.migrar::before { background: var(--red); }
-  .metric.cobranca::before { background: var(--amber); }
-  .metric.espaco::before { background: var(--green); }
-  .metric.canceladas::before { background: var(--muted); }
-  .metric-label {
-    font-size: 11px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 8px;
-  }
-  .metric-value {
-    font-family: var(--mono);
-    font-size: 28px;
-    font-weight: 500;
-    line-height: 1;
-  }
-  .metric.total .metric-value { color: var(--accent); }
-  .metric.migrar .metric-value { color: var(--red); }
-  .metric.cobranca .metric-value { color: var(--amber); }
-  .metric.espaco .metric-value { color: var(--green); }
-  .metric.canceladas .metric-value { color: var(--muted); }
-  .metric-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+/* ── NAV ── */
+.nav-bar{border-bottom:1px solid var(--border);padding:0 32px;display:flex;gap:2px;background:rgba(13,15,20,.7)}
+.nav-btn{padding:10px 18px;font-size:12px;color:var(--muted);border:none;background:none;font-family:var(--font);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px}
+.nav-btn:hover{color:var(--text)}
+.nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.nav-btn.hidden{display:none}
 
-  /* ALERTS */
-  .alerts {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 28px;
-  }
-  .alert-box {
-    border-radius: 10px;
-    padding: 16px 20px;
-    border: 1px solid;
-  }
-  .alert-box.danger {
-    background: var(--red-dim);
-    border-color: rgba(240,82,82,0.2);
-  }
-  .alert-box.warning {
-    background: var(--amber-dim);
-    border-color: rgba(245,158,11,0.2);
-  }
-  .alert-title {
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .alert-box.danger .alert-title { color: var(--red); }
-  .alert-box.warning .alert-title { color: var(--amber); }
-  .alert-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-  .alert-box.danger .alert-dot { background: var(--red); }
-  .alert-box.warning .alert-dot { background: var(--amber); }
-  .alert-list { list-style: none; }
-  .alert-list li {
-    font-size: 12px;
-    font-family: var(--mono);
-    color: var(--text);
-    padding: 4px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-  }
-  .alert-list li:last-child { border-bottom: none; }
-  .alert-list .domain { color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
-  .alert-list .val { color: var(--text); flex-shrink: 0; font-size: 12px; }
+/* ── SCREENS ── */
+.screen{display:none}
+.screen.active{display:block}
+main{max-width:1280px;margin:0 auto;padding:32px 32px 64px}
 
-  /* CONTROLS */
-  .controls {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  .tabs {
-    display: flex;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 3px;
-    gap: 2px;
-  }
-  .tab {
-    padding: 6px 14px;
-    border-radius: 6px;
-    font-size: 12px;
-    cursor: pointer;
-    color: var(--muted);
-    border: none;
-    background: none;
-    font-family: var(--font);
-    font-weight: 400;
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
-  .tab:hover { color: var(--text); }
-  .tab.active { background: var(--surface2); color: var(--text); font-weight: 500; }
-  .tab.active.red-tab { color: var(--red); }
-  .tab.active.amber-tab { color: var(--amber); }
-  .tab.active.gray-tab { color: var(--muted); }
-  .search-wrap {
-    flex: 1;
-    min-width: 180px;
-    max-width: 280px;
-    position: relative;
-  }
-  .search-icon {
-    position: absolute;
-    left: 10px; top: 50%;
-    transform: translateY(-50%);
-    width: 14px; height: 14px;
-    opacity: 0.35;
-  }
-  .search-wrap input {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 7px 10px 7px 30px;
-    color: var(--text);
-    font-size: 13px;
-    font-family: var(--font);
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  .search-wrap input:focus { border-color: var(--border2); }
-  .search-wrap input::placeholder { color: var(--muted); }
-  .filter-group {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .filter-group label { font-size: 12px; color: var(--muted); white-space: nowrap; }
-  .filter-group select, .filter-group input[type=number] {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 7px 10px;
-    color: var(--text);
-    font-size: 12px;
-    font-family: var(--font);
-    outline: none;
-  }
-  .filter-group select { padding-right: 28px; }
-  .filter-group input[type=number] { width: 80px; }
+/* ── METRICS ── */
+.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:28px}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;position:relative;overflow:hidden}
+.metric::before{content:"";position:absolute;top:0;left:0;right:0;height:2px}
+.metric.total::before{background:var(--accent)}
+.metric.migrar::before{background:var(--red)}
+.metric.cobranca::before{background:var(--amber)}
+.metric.espaco::before{background:var(--green)}
+.metric.canceladas::before{background:var(--muted)}
+.metric-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.metric-value{font-family:var(--mono);font-size:28px;font-weight:500;line-height:1}
+.metric.total .metric-value{color:var(--accent)}.metric.migrar .metric-value{color:var(--red)}.metric.cobranca .metric-value{color:var(--amber)}.metric.espaco .metric-value{color:var(--green)}.metric.canceladas .metric-value{color:var(--muted)}
+.metric-sub{font-size:11px;color:var(--muted);margin-top:4px}
 
-  /* LEGEND */
-  .legend {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    color: var(--muted);
-  }
-  .legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+/* ── ALERTS ── */
+.alerts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:28px}
+.alert-box{border-radius:10px;padding:16px 20px;border:1px solid}
+.alert-box.danger{background:var(--red-dim);border-color:rgba(240,82,82,.2)}
+.alert-box.warning{background:var(--amber-dim);border-color:rgba(245,158,11,.2)}
+.alert-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.alert-box.danger .alert-title{color:var(--red)}.alert-box.warning .alert-title{color:var(--amber)}
+.alert-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.alert-box.danger .alert-dot{background:var(--red)}.alert-box.warning .alert-dot{background:var(--amber)}
+.alert-list{list-style:none}
+.alert-list li{font-size:12px;font-family:var(--mono);color:var(--text);padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.alert-list li:last-child{border-bottom:none}
+.alert-list .domain{color:var(--muted);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.alert-list .val{color:var(--text);flex-shrink:0;font-size:12px}
 
-  /* TABLE */
-  .table-wrap {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  .count-row {
-    padding: 10px 20px;
-    font-size: 11px;
-    color: var(--muted);
-    border-bottom: 1px solid var(--border);
-    font-family: var(--mono);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .table-scroll { overflow-x: auto; }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-  thead th {
-    text-align: left;
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--muted);
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-    cursor: pointer;
-    user-select: none;
-    background: var(--surface);
-  }
-  thead th:hover { color: var(--text); }
-  thead th.num { text-align: right; }
-  thead th.center { text-align: center; }
-  thead th .arr { margin-left: 3px; opacity: 0.3; }
-  thead th.sorted .arr { opacity: 1; color: var(--accent); }
-  tbody tr {
-    border-bottom: 1px solid var(--border);
-    transition: background 0.1s, opacity 0.2s;
-  }
-  tbody tr:last-child { border-bottom: none; }
-  tbody tr:hover { background: var(--surface2); }
-  tbody td {
-    padding: 11px 16px;
-    color: var(--text);
-    vertical-align: middle;
-  }
-  tbody td.num { text-align: center; font-family: var(--mono); font-size: 12px; }
+/* ── CONTROLS ── */
+.controls{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.tabs{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:3px;gap:2px}
+.tab{padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--muted);border:none;background:none;font-family:var(--font);font-weight:400;transition:all .15s;white-space:nowrap}
+.tab:hover{color:var(--text)}.tab.active{background:var(--surface2);color:var(--text);font-weight:500}.tab.active.red-tab{color:var(--red)}.tab.active.amber-tab{color:var(--amber)}.tab.active.gray-tab{color:var(--muted)}
+.search-wrap{flex:1;min-width:180px;max-width:280px;position:relative}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;opacity:.35}
+.search-wrap input,.filter-group select,.filter-group input[type=number]{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;font-family:var(--font);outline:none}
+.search-wrap input{width:100%;padding:7px 10px 7px 30px;font-size:13px;transition:border-color .15s}
+.search-wrap input:focus{border-color:var(--border2)}
+.search-wrap input::placeholder{color:var(--muted)}
+.filter-group{display:flex;align-items:center;gap:6px}
+.filter-group label{font-size:12px;color:var(--muted);white-space:nowrap}
+.filter-group select{padding:7px 28px 7px 10px}.filter-group input[type=number]{width:80px;padding:7px 10px}
+.legend{display:flex;gap:20px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
 
-  /* CANCELADA ROW */
-  tbody tr.row-cancelada {
-    opacity: 0.38;
-  }
-  tbody tr.row-cancelada:hover {
-    opacity: 0.55;
-    background: var(--surface2);
-  }
-  tbody tr.row-cancelada .domain-text {
-    text-decoration: line-through;
-    text-decoration-color: rgba(255,255,255,0.25);
-  }
-  tbody tr.row-cancelada .badge-red,
-  tbody tr.row-cancelada .badge-amber,
-  tbody tr.row-cancelada .badge-blue {
-    opacity: 0.4;
-  }
+/* ── TABLE ── */
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.count-row{padding:10px 20px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);font-family:var(--mono);display:flex;justify-content:space-between;align-items:center}
+.table-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);padding:10px 16px;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;background:var(--surface)}
+thead th:hover{color:var(--text)}.thead th.num{text-align:right}.thead th.center{text-align:center}
+thead th .arr{margin-left:3px;opacity:.3}.thead th.sorted .arr{opacity:1;color:var(--accent)}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s,opacity .2s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--surface2)}
+tbody td{padding:11px 16px;color:var(--text);vertical-align:middle}
+tbody td.num{text-align:center;font-family:var(--mono);font-size:12px}
+tbody tr.row-cancelada{opacity:.35}
+tbody tr.row-cancelada:hover{opacity:.55;background:var(--surface2)}
+tbody tr.row-cancelada .domain-text{text-decoration:line-through;text-decoration-color:rgba(255,255,255,.25)}
+tbody tr.row-cancelada .badge-red,tbody tr.row-cancelada .badge-amber,tbody tr.row-cancelada .badge-blue{opacity:.4}
+.cancel-btn{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;border:1px solid var(--border2);background:none;cursor:pointer;margin:0 auto;transition:all .15s;color:var(--muted);flex-shrink:0}
+.cancel-btn:hover{border-color:var(--red);color:var(--red);background:var(--red-dim)}
+.cancel-btn.is-cancelada{border-color:rgba(240,82,82,.4);background:var(--red-dim);color:var(--red)}
+.cancel-btn.loading{opacity:.4;pointer-events:none}
+.cancel-btn.locked{opacity:.2;cursor:not-allowed;pointer-events:none}
+.cancel-btn svg{width:14px;height:14px}
+.domain-col{max-width:280px}
+.domain-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-family:var(--mono);color:var(--text);display:block}
+.owner-text{font-size:11px;color:var(--muted);font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badges{display:flex;gap:4px;margin-top:3px;flex-wrap:wrap}
+.badge{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.badge-red{background:var(--red-dim);color:var(--red);border:1px solid rgba(240,82,82,.2)}
+.badge-amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
+.badge-blue{background:var(--blue-dim);color:var(--accent);border:1px solid rgba(79,142,247,.2)}
+.badge-gray{background:rgba(107,114,128,.15);color:var(--muted);border:1px solid rgba(107,114,128,.25)}
+.bar-cell{display:flex;align-items:center;gap:8px;min-width:140px}
+.bar-track{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;min-width:60px}
+.bar-fill{height:100%;border-radius:2px;transition:width .3s}
+.bar-fill.c-red{background:var(--red)}.bar-fill.c-amber{background:var(--amber)}.bar-fill.c-blue{background:var(--accent)}.bar-fill.c-green{background:var(--green)}
+.gb-num{font-family:var(--mono);font-size:12px;min-width:52px;text-align:right}
+.sub-cell{font-family:var(--mono);font-size:12px;color:var(--text)}
+.empty{text-align:center;padding:48px;color:var(--muted);font-size:13px}
 
-  /* CHECKBOX CANCELADA */
-  .cancel-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px; height: 28px;
-    border-radius: 6px;
-    border: 1px solid var(--border2);
-    background: none;
-    cursor: pointer;
-    margin: 0 auto;
-    transition: all 0.15s;
-    color: var(--muted);
-    flex-shrink: 0;
-  }
-  .cancel-btn:hover { border-color: var(--red); color: var(--red); background: var(--red-dim); }
-  .cancel-btn.is-cancelada {
-    border-color: rgba(240,82,82,0.4);
-    background: var(--red-dim);
-    color: var(--red);
-  }
-  .cancel-btn.loading {
-    opacity: 0.4;
-    pointer-events: none;
-  }
-  .cancel-btn svg { width: 14px; height: 14px; }
+/* ── LOGS SCREEN ── */
+.log-filters{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.log-filters input,.log-filters select{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--text);font-size:12px;font-family:var(--font);outline:none}
+.acao-cancelou{color:var(--red);font-family:var(--mono);font-size:12px}
+.acao-reativou{color:var(--green);font-family:var(--mono);font-size:12px}
+.log-domain,.log-date,.log-user{font-family:var(--mono);font-size:11px;color:var(--muted)}
 
-  .domain-col { max-width: 280px; }
-  .domain-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 12px;
-    font-family: var(--mono);
-    color: var(--text);
-    display: block;
-  }
-  .owner-text {
-    font-size: 11px;
-    color: var(--muted);
-    font-family: var(--mono);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .badges { display: flex; gap: 4px; margin-top: 3px; flex-wrap: wrap; }
-  .badge {
-    font-size: 9px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-  .badge-red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(240,82,82,0.2); }
-  .badge-amber { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
-  .badge-blue { background: var(--blue-dim); color: var(--accent); border: 1px solid rgba(79,142,247,0.2); }
-  .badge-gray { background: rgba(107,114,128,0.15); color: var(--muted); border: 1px solid rgba(107,114,128,0.25); }
-  .bar-cell { display: flex; align-items: center; gap: 8px; min-width: 140px; }
-  .bar-track {
-    flex: 1;
-    height: 4px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 2px;
-    overflow: hidden;
-    min-width: 60px;
-  }
-  .bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
-  .bar-fill.c-red { background: var(--red); }
-  .bar-fill.c-amber { background: var(--amber); }
-  .bar-fill.c-blue { background: var(--accent); }
-  .bar-fill.c-green { background: var(--green); }
-  .gb-num { font-family: var(--mono); font-size: 12px; min-width: 52px; text-align: right; }
-  .price-cell { font-family: var(--mono); font-size: 12px; color: var(--muted); }
-  .sub-cell { font-family: var(--mono); font-size: 12px; color: var(--text); }
-  .empty {
-    text-align: center;
-    padding: 48px;
-    color: var(--muted);
-    font-size: 13px;
-  }
+/* ── USERS SCREEN ── */
+.page-title{margin-bottom:28px}
+.page-title h1{font-size:22px;font-weight:600;letter-spacing:-.02em;margin-bottom:4px}
+.page-title p{font-size:13px;color:var(--muted)}
+.users-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.users-list-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.section-header{padding:14px 20px;border-bottom:1px solid var(--border);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.user-row{display:flex;align-items:center;padding:12px 20px;border-bottom:1px solid var(--border);gap:12px}
+.user-row:last-child{border-bottom:none}
+.user-avatar-sm{width:32px;height:32px;border-radius:50%;background:var(--surface2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--muted);flex-shrink:0}
+.user-row-info{flex:1;min-width:0}
+.user-row-email{font-size:12px;font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-row-meta{font-size:11px;color:var(--muted);margin-top:1px}
+.btn-remove{padding:4px 10px;background:none;border:1px solid var(--border);border-radius:5px;color:var(--muted);font-size:11px;font-family:var(--mono);cursor:pointer;transition:all .15s;flex-shrink:0}
+.btn-remove:hover{border-color:var(--red);color:var(--red);background:var(--red-dim)}
+.add-user-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px}
+.add-user-card h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.add-user-card>p{font-size:12px;color:var(--muted);margin-bottom:20px}
+.add-user-card .field{margin-bottom:14px}
+.add-user-card .field label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.add-user-card .field input,.add-user-card .field select{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:7px;padding:9px 12px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;transition:border-color .15s}
+.add-user-card .field input:focus,.add-user-card .field select:focus{border-color:var(--accent)}
+.btn-add-user{width:100%;padding:10px;background:var(--accent);color:#fff;border:none;border-radius:7px;font-size:13px;font-family:var(--font);font-weight:500;cursor:pointer;transition:opacity .15s}
+.btn-add-user:hover{opacity:.88}.btn-add-user:disabled{opacity:.4;cursor:not-allowed}
+.add-user-msg{font-size:12px;margin-top:10px;font-family:var(--mono);display:none}
+.add-user-msg.ok{color:var(--green);display:block}.add-user-msg.err{color:var(--red);display:block}
 
-  /* TOAST */
-  #toast {
-    position: fixed;
-    bottom: 24px; right: 24px;
-    background: var(--surface2);
-    border: 1px solid var(--border2);
-    border-radius: 8px;
-    padding: 10px 16px;
-    font-size: 12px;
-    font-family: var(--mono);
-    color: var(--text);
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.2s, transform 0.2s;
-    pointer-events: none;
-    z-index: 999;
-    max-width: 320px;
-  }
-  #toast.show { opacity: 1; transform: translateY(0); }
-  #toast.ok { border-color: rgba(52,211,153,0.3); color: var(--green); }
-  #toast.err { border-color: rgba(240,82,82,0.3); color: var(--red); }
+/* ── MODAL ── */
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);z-index:500;display:none;align-items:center;justify-content:center}
+#modal-overlay.show{display:flex}
+.modal-box{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:28px 32px;max-width:380px;width:90%}
+.modal-box h3{font-size:16px;font-weight:600;margin-bottom:8px}
+.modal-box p{font-size:13px;color:var(--muted);margin-bottom:24px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end}
+.btn-ghost{padding:8px 18px;background:none;border:1px solid var(--border2);border-radius:7px;color:var(--muted);font-size:13px;font-family:var(--font);cursor:pointer;transition:all .15s}
+.btn-ghost:hover{color:var(--text)}
+.btn-danger-sm{padding:8px 18px;background:var(--red-dim);border:1px solid rgba(240,82,82,.3);border-radius:7px;color:var(--red);font-size:13px;font-family:var(--font);cursor:pointer;transition:opacity .15s}
+.btn-danger-sm:hover{opacity:.8}
 
-  /* SETUP BANNER */
-  #setup-banner {
-    background: var(--amber-dim);
-    border: 1px solid rgba(245,158,11,0.25);
-    border-radius: 10px;
-    padding: 14px 20px;
-    margin-bottom: 24px;
-    font-size: 12px;
-    color: var(--amber);
-    font-family: var(--mono);
-    display: none;
-  }
-  #setup-banner.show { display: block; }
-  #setup-banner strong { font-weight: 600; }
-  #setup-banner code {
-    background: rgba(245,158,11,0.1);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 11px;
-  }
+/* ── TOAST ── */
+#toast{position:fixed;bottom:24px;right:24px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 16px;font-size:12px;font-family:var(--mono);color:var(--text);opacity:0;transform:translateY(8px);transition:opacity .2s,transform .2s;pointer-events:none;z-index:999;max-width:340px}
+#toast.show{opacity:1;transform:translateY(0)}
+#toast.ok{border-color:rgba(52,211,153,.3);color:var(--green)}
+#toast.err{border-color:rgba(240,82,82,.3);color:var(--red)}
 
-  /* FOOTER */
-  footer {
-    text-align: center;
-    padding: 24px;
-    font-size: 11px;
-    color: var(--muted);
-    font-family: var(--mono);
-    border-top: 1px solid var(--border);
-    margin-top: 48px;
-  }
+footer{text-align:center;padding:24px;font-size:11px;color:var(--muted);font-family:var(--mono);border-top:1px solid var(--border);margin-top:48px}
 
-  @media (max-width: 768px) {
-    main { padding: 20px 16px 48px; }
-    header { padding: 0 16px; }
-    .metrics { grid-template-columns: repeat(2, 1fr); }
-    .alerts { grid-template-columns: 1fr; }
-    .controls { flex-direction: column; align-items: stretch; }
-    .search-wrap { max-width: 100%; }
-  }
+@media(max-width:768px){
+  main{padding:20px 16px 48px}
+  header{padding:0 16px}
+  .nav-bar{padding:0 16px;overflow-x:auto}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .alerts{grid-template-columns:1fr}
+  .controls{flex-direction:column;align-items:stretch}
+  .search-wrap{max-width:100%}
+  .users-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">sempli / <span>hostguiase</span> — revendas</div>
-  <div class="header-right">
-    <div class="db-status">
-      <div class="db-dot" id="db-dot"></div>
-      <span id="db-label">supabase</span>
-    </div>
-    <div class="header-date" id="hdate"></div>
+<!-- LOGIN -->
+<div id="screen-login">
+  <div class="login-card">
+    <div class="login-logo">sempli / <span>hostguiase</span></div>
+    <h2>Acesso ao painel</h2>
+    <p>Entre com seu e-mail e senha para continuar.</p>
+    <div class="field"><label>E-mail</label><input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email"></div>
+    <div class="field"><label>Senha</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"></div>
+    <button class="btn-primary" id="btn-login" onclick="doLogin()">Entrar</button>
+    <div id="login-err"></div>
   </div>
-</header>
+</div>
 
-<main>
+<!-- APP -->
+<div id="screen-app">
+  <header>
+    <div class="logo">sempli / <span>hostguiase</span> — revendas</div>
+    <div class="header-right">
+      <div class="db-status"><div class="db-dot" id="db-dot"></div><span id="db-label">supabase</span></div>
+      <div class="header-date" id="hdate"></div>
+      <div class="user-chip">
+        <div class="user-avatar" id="user-av">?</div>
+        <span id="user-name">—</span>
+        <span class="role-badge" id="user-role-badge">—</span>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Sair</button>
+    </div>
+  </header>
 
-  <div id="setup-banner">
-    ⚠ <strong>Configuração necessária:</strong> substitua <code>SUPABASE_URL</code> e <code>SUPABASE_ANON_KEY</code> no início do script pelos valores do seu projeto. Veja o SQL de criação da tabela nos comentários do código.
+  <nav class="nav-bar">
+    <button class="nav-btn active" onclick="goScreen('dashboard',this)">Painel</button>
+    <button class="nav-btn hidden" id="nav-logs"  onclick="goScreen('logs',this)">Logs de auditoria</button>
+    <button class="nav-btn hidden" id="nav-users" onclick="goScreen('users',this)">Usuários</button>
+  </nav>
+
+  <!-- SCREEN DASHBOARD -->
+  <div class="screen active" id="sc-dashboard">
+  <main>
+    <div class="page-title">
+      <h1>Painel de gestão de revendas</h1>
+      <p>Análise de espaço, contas e prioridades de migração e cobrança</p>
+    </div>
+    <div class="metrics">
+      <div class="metric total"><div class="metric-label">Total de revendas</div><div class="metric-value" id="m-total">—</div><div class="metric-sub">revendedores ativos</div></div>
+      <div class="metric migrar"><div class="metric-label">Urgente — migrar</div><div class="metric-value" id="m-migrar">—</div><div class="metric-sub">&gt;50 GB ou ≥20 contas</div></div>
+      <div class="metric cobranca"><div class="metric-label">Cobrança extra</div><div class="metric-value" id="m-cobr">—</div><div class="metric-sub">acima de 50 GB</div></div>
+      <div class="metric espaco"><div class="metric-label">Espaço total</div><div class="metric-value" id="m-gb">—</div><div class="metric-sub">gigabytes em uso</div></div>
+      <div class="metric canceladas"><div class="metric-label">Canceladas</div><div class="metric-value" id="m-canceladas">—</div><div class="metric-sub">revendas encerradas</div></div>
+    </div>
+    <div class="alerts">
+      <div class="alert-box danger"><div class="alert-title"><span class="alert-dot"></span>Top 5 — Espaço</div><ul class="alert-list" id="alert-migrar"></ul></div>
+      <div class="alert-box danger"><div class="alert-title"><span class="alert-dot"></span>Top 5 — mais contas</div><ul class="alert-list" id="alert-migrar-num-contas"></ul></div>
+      <div class="alert-box warning"><div class="alert-title"><span class="alert-dot"></span>Cobrança adicional — acima de 50 GB</div><ul class="alert-list" id="alert-cobr"></ul></div>
+    </div>
+    <div class="controls">
+      <div class="tabs">
+        <button class="tab active" onclick="setTab('todas',this)">Todas</button>
+        <button class="tab red-tab" onclick="setTab('migrar',this)">&#9632; Migrar agora</button>
+        <button class="tab amber-tab" onclick="setTab('cobranca',this)">&#9632; Cobrança &gt;50GB</button>
+        <button class="tab gray-tab" onclick="setTab('canceladas',this)">&#9632; Canceladas</button>
+      </div>
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10 10l3 3"/></svg>
+        <input type="text" id="search" placeholder="Buscar domínio ou owner…" oninput="render()">
+      </div>
+      <div class="filter-group">
+        <label>Ordenar:</label>
+        <select id="sort" onchange="render()">
+          <option value="espaco_desc">Espaço (maior)</option><option value="espaco_asc">Espaço (menor)</option>
+          <option value="contas_desc">Contas (maior)</option><option value="contas_asc">Contas (menor)</option>
+          <option value="dominio">Domínio (A→Z)</option><option value="subtotal_desc">Subtotal (maior)</option>
+        </select>
+      </div>
+      <div class="filter-group"><label>Mín. GB:</label><input type="number" id="min-gb" placeholder="0" min="0" oninput="render()"></div>
+      <button id="btn-export-pdf" onclick="exportCanceladasPDF()" title="Exportar canceladas para PDF" style="display:none;align-items:center;gap:6px;padding:6px 14px;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-family:inherit;font-size:13px;cursor:pointer;white-space:nowrap;">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h6l3 3v9H4V2z"/><path d="M9 2v4h4"/><path d="M6 9h4M6 12h4"/></svg>
+        Exportar PDF
+      </button>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>&gt;100 GB — crítico</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>50–100 GB — cobrança extra</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>20–50 GB</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>&lt;20 GB</div>
+      <div style="margin-left:auto"><div class="legend-item" style="opacity:.5"><div class="legend-dot" style="background:var(--muted)"></div>Canceladas ficam esmaecidas</div></div>
+    </div>
+    <div class="table-wrap">
+      <div class="count-row"><span id="count-info">—</span><span style="color:var(--muted)">clique no cabeçalho para ordenar</span></div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr>
+            <th style="width:5%;text-align:center">Status</th>
+            <th style="width:28%" onclick="sortBy('dominio')">Domínio <span class="arr" id="arr-dominio">↕</span></th>
+            <th style="width:8%;text-align:right" onclick="sortBy('contas_desc')">Contas <span class="arr" id="arr-contas_desc">↕</span></th>
+            <th style="width:24%" onclick="sortBy('espaco_desc')">Espaço (GB) <span class="arr" id="arr-espaco_desc">↓</span></th>
+            <th style="width:12%;text-align:right" onclick="sortBy('subtotal_desc')">Subtotal <span class="arr" id="arr-subtotal_desc">↕</span></th>
+            <th style="width:12%;text-align:right">Alertas</th>
+          </tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+  <footer>gerado em <span id="fdate"></span> · sempli / hostguiase · dados do relatório de revendas</footer>
   </div>
 
-  <div class="page-title">
-    <h1>Painel de gestão de revendas</h1>
-    <p>Análise de espaço, contas e prioridades de migração e cobrança</p>
-  </div>
-
-  <div class="metrics">
-    <div class="metric total">
-      <div class="metric-label">Total de revendas</div>
-      <div class="metric-value" id="m-total">—</div>
-      <div class="metric-sub">revendedores ativos</div>
-    </div>
-    <div class="metric migrar">
-      <div class="metric-label">Urgente — migrar</div>
-      <div class="metric-value" id="m-migrar">—</div>
-      <div class="metric-sub">&gt;50 GB ou ≥20 contas</div>
-    </div>
-    <div class="metric cobranca">
-      <div class="metric-label">Cobrança extra</div>
-      <div class="metric-value" id="m-cobr">—</div>
-      <div class="metric-sub">acima de 50 GB</div>
-    </div>
-    <div class="metric espaco">
-      <div class="metric-label">Espaço total</div>
-      <div class="metric-value" id="m-gb">—</div>
-      <div class="metric-sub">gigabytes em uso</div>
-    </div>
-    <div class="metric canceladas">
-      <div class="metric-label">Canceladas</div>
-      <div class="metric-value" id="m-canceladas">—</div>
-      <div class="metric-sub">revendas encerradas</div>
-    </div>
-  </div>
-
-  <div class="alerts">
-    <div class="alert-box danger">
-      <div class="alert-title"><span class="alert-dot"></span>Top 5 — Espaço</div>
-      <ul class="alert-list" id="alert-migrar"></ul>
-    </div>
-    <div class="alert-box danger">
-      <div class="alert-title"><span class="alert-dot"></span>Top 5 — mais contas</div>
-      <ul class="alert-list" id="alert-migrar-num-contas"></ul>
-    </div>
-    <div class="alert-box warning">
-      <div class="alert-title"><span class="alert-dot"></span>Cobrança adicional — acima de 50 GB</div>
-      <ul class="alert-list" id="alert-cobr"></ul>
-    </div>
-  </div>
-
-  <div class="controls">
-    <div class="tabs">
-      <button class="tab active" onclick="setTab('todas',this)">Todas</button>
-      <button class="tab red-tab" onclick="setTab('migrar',this)">&#9632; Migrar agora</button>
-      <button class="tab amber-tab" onclick="setTab('cobranca',this)">&#9632; Cobrança &gt;50GB</button>
-      <button class="tab gray-tab" onclick="setTab('canceladas',this)">&#9632; Canceladas</button>
-    </div>
-    <div class="search-wrap">
-      <svg class="search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10 10l3 3"/></svg>
-      <input type="text" id="search" placeholder="Buscar domínio ou owner…" oninput="render()">
-    </div>
-    <div class="filter-group">
-      <label>Ordenar:</label>
-      <select id="sort" onchange="render()">
-        <option value="espaco_desc">Espaço (maior)</option>
-        <option value="espaco_asc">Espaço (menor)</option>
-        <option value="contas_desc">Contas (maior)</option>
-        <option value="contas_asc">Contas (menor)</option>
-        <option value="dominio">Domínio (A→Z)</option>
-        <option value="subtotal_desc">Subtotal (maior)</option>
+  <!-- SCREEN LOGS -->
+  <div class="screen" id="sc-logs">
+  <main>
+    <div class="page-title"><h1>Logs de auditoria</h1><p>Histórico completo de todas as ações realizadas no painel</p></div>
+    <div class="log-filters">
+      <input type="text" id="log-search" placeholder="Filtrar por usuário ou domínio…" oninput="renderLogs()" style="flex:1;min-width:200px;max-width:340px">
+      <select id="log-acao" onchange="renderLogs()">
+        <option value="">Todas as ações</option>
+        <option value="cancelou">Cancelou</option>
+        <option value="reativou">Reativou</option>
       </select>
     </div>
-    <div class="filter-group">
-      <label>Mín. GB:</label>
-      <input type="number" id="min-gb" placeholder="0" min="0" oninput="render()">
+    <div class="table-wrap">
+      <div class="count-row"><span id="log-count">—</span></div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr>
+            <th style="width:22%;cursor:default">Usuário</th>
+            <th style="width:14%;cursor:default">Ação</th>
+            <th style="width:38%;cursor:default">Domínio</th>
+            <th style="width:26%;cursor:default">Data / Hora</th>
+          </tr></thead>
+          <tbody id="log-tbody"></tbody>
+        </table>
+      </div>
     </div>
+  </main>
   </div>
 
-  <div class="legend">
-    <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>&gt;100 GB — crítico</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>50–100 GB — cobrança extra</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>20–50 GB</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>&lt;20 GB</div>
-    <div style="margin-left:auto">
-      <div class="legend-item" style="opacity:0.5"><div class="legend-dot" style="background:var(--muted)"></div>Canceladas ficam esmaecidas</div>
+  <!-- SCREEN USERS -->
+  <div class="screen" id="sc-users">
+  <main>
+    <div class="page-title"><h1>Gerenciar usuários</h1><p>Somente você pode adicionar ou remover usuários do sistema</p></div>
+    <div class="users-grid">
+      <div class="users-list-wrap">
+        <div class="section-header">
+          <span>Usuários cadastrados</span>
+          <span id="users-count" style="font-family:var(--mono);font-size:11px;color:var(--muted)">—</span>
+        </div>
+        <div id="users-list"></div>
+      </div>
+      <div class="add-user-card">
+  <h3>Adicionar usuário</h3>
+  <p>O usuário poderá fazer login imediatamente com as credenciais definidas aqui.</p>
+  <div class="field"><label>E-mail</label><input type="email" id="nu-email" placeholder="usuario@email.com"></div>
+  <div class="field"><label>Nome</label><input type="text" id="nu-nome" placeholder="Nome completo"></div>
+  <div class="field"><label>Senha</label><input type="password" id="nu-senha" placeholder="Mínimo 6 caracteres"></div>
+  <div class="field">
+    <label>Perfil</label>
+    <select id="nu-role">
+      <option value="editor">Editor — pode cancelar/reativar revendas</option>
+      <option value="viewer">Viewer — somente leitura</option>
+    </select>
+  </div>
+  <button class="btn-add-user" id="btn-add-user" onclick="addUser()">Adicionar usuário</button>
+  <div class="add-user-msg" id="add-user-msg"></div>
+</div>
+    </div>
+  </main>
+  </div>
+</div><!-- /screen-app -->
+
+<!-- MODAL -->
+<div id="modal-overlay">
+  <div class="modal-box">
+    <h3 id="modal-title">Confirmar</h3>
+    <p id="modal-body"></p>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn-danger-sm" id="modal-ok">Confirmar</button>
     </div>
   </div>
-
-  <div class="table-wrap">
-    <div class="count-row">
-      <span id="count-info">—</span>
-      <span style="color:var(--muted)">clique no cabeçalho para ordenar</span>
-    </div>
-    <div class="table-scroll">
-      <table>
-        <thead>
-          <tr>
-            <th style="width:5%" class="center">Cancelar</th>
-            <th style="width:28%" onclick="sortBy('dominio')">Domínio <span class="arr" id="arr-dominio">↕</span></th>
-            <th class="num" style="width:8%" onclick="sortBy('contas_desc')">Contas <span class="arr" id="arr-contas_desc">↕</span></th>
-            <th style="width:24%" onclick="sortBy('espaco_desc')">Espaço (GB) <span class="arr" id="arr-espaco_desc">↓</span></th>
-            <th class="num" style="width:12%" onclick="sortBy('subtotal_desc')">Subtotal <span class="arr" id="arr-subtotal_desc">↕</span></th>
-            <th class="num" style="width:12%">Status</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </div>
-  </div>
-</main>
-
-<footer>gerado em <span id="fdate"></span> · sempli / hostguiase · dados do relatório de revendas</footer>
-
+</div>
 <div id="toast"></div>
 
 <script>
-/* =====================================================================
-   CONFIGURAÇÃO SUPABASE
-   Substitua os dois valores abaixo pelos do seu projeto:
-   - Acesse: https://app.supabase.com → seu projeto → Settings → API
-   ===================================================================== */
-const SUPABASE_URL  = 'https://udwwgyeyssiwewcmwnxa.supabase.co';   // ← altere aqui
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkd3dneWV5c3Npd2V3Y213bnhhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3OTMzNDcsImV4cCI6MjA5MTM2OTM0N30.CGLdvJw2Xr9zYvIQ67khXta8AC2XzTEGqywbrC4wux0';                  // ← altere aqui
 
-/* =====================================================================
-   SQL PARA CRIAR A TABELA NO SUPABASE (rode no SQL Editor):
+const SUPABASE_URL  = 'https://udwwgyeyssiwewcmwnxa.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkd3dneWV5c3Npd2V3Y213bnhhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3OTMzNDcsImV4cCI6MjA5MTM2OTM0N30.CGLdvJw2Xr9zYvIQ67khXta8AC2XzTEGqywbrC4wux0';
 
-   create table revendas (
-     dominio text primary key,
-     cancelada boolean not null default false
-   );
+/* ── ESTADO ── */
+let SESSION = null, PROFILE = null, LOGS = [];
+let canceladas = {}, currentTab = 'todas';
 
-   -- Inserir todos os domínios de uma vez:
-   insert into revendas (dominio) values
-     ('bentogoncalves.sempli.com.br'),
-     ('vilaformosa.sempli.com.br'),
-     ('spmooca.sempli.com.br'),
-     ('socorro.sempli.com.br'),
-     ('vilavelhaitaparica.sempli.com.br'),
-     ('tijuca.rjguiase.sempli.com.br'),
-     ('botucatuguiase.sempli.com.br'),
-     ('rio-campogrande.sempli.com.br'),
-     ('cwb.curitibaguiase.sempli.com.br'),
-     ('interlagos.sempli.com.br'),
-     ('vilaprudente.sempli.com.br'),
-     ('curitibanosrc1.sempli.com.br'),
-     ('centro.rjguiase.sempli.com.br'),
-     ('valqueire.sempli.com.br'),
-     ('parque.indaiatuba.sempli.com.br'),
-     ('vilaandrade.sempli.com.br'),
-     ('campinasguiaserc4.sempli.com.br'),
-     ('novafriburgotrade.sempli.com.br'),
-     ('iracema.fortaleza.sempli.com.br'),
-     ('salvadorcentro.sempli.com.br'),
-     ('pinheiros.sempli.com.br'),
-     ('centro.osascoguiase.sempli.com.br'),
-     ('ribeiraopretobotanico.sempli.com.br'),
-     ('botafogorj.sempli.com.br'),
-     ('centro.pindamonhangaba.sempli.com.br'),
-     ('centro.saocaetanoguiase.sempli.com.br'),
-     ('centro.pelotas.sempli.com.br'),
-     ('santana.sempli.com.br'),
-     ('vila.voltaredondaguiase.sempli.com.br'),
-     ('analiafrancoguiase.sempli.com.br'),
-     ('vlmariana.sempli.com.br'),
-     ('anapoliscentro.sempli.com.br'),
-     ('sul.sbcguiase.sempli.com.br'),
-     ('curitibacabral.sempli.com.br'),
-     ('laurodefreitasguiase.sempli.com.br'),
-     ('amparo.sempli.com.br'),
-     ('cachoeiradosulguiase.sempli.com.br'),
-     ('campinasproven.sempli.com.br'),
-     ('jundiairc2.hostguiase.com.br'),
-     ('belemguiase.sempli.com.br'),
-     ('bhsavassi.sempli.com.br'),
-     ('guarulhossul.sempli.com.br'),
-     ('centro.sbc.sempli.com.br'),
-     ('cacoal1.sempli.com.br'),
-     ('santoamaroguiase.sempli.com.br'),
-     ('gonzaga.santosguiase.sempli.com.br'),
-     ('valeeuropeu.blumenauguiase.sempli.com.br'),
-     ('novaodessa.sempli.com.br'),
-     ('barradatijuca.sempli.com.br'),
-     ('vilamadalenaguiase.sempli.com.br'),
-     ('valinhos.sempli.com.br'),
-     ('vilacarraoguiase.sempli.com.br'),
-     ('itaimpaulistaguiase.sempli.com.br'),
-     ('setorhospitalar.brasilia.sempli.com.br'),
-     ('centralbelem.sempli.com.br'),
-     ('moemaguiase.sempli.com.br'),
-     ('londrinaglebapalhano.sempli.com.br'),
-     ('gyn.goianiaguiase.sempli.com.br'),
-     ('jardimamerica.rjguiase.sempli.com.br'),
-     ('carapicuibarc2.sempli.com.br'),
-     ('bragancapaulistasulguiase.sempli.com.br'),
-     ('cajamarguiase.sempli.com.br'),
-     ('vitoriarc1.sempli.com.br'),
-     ('varzeapaulista.sempli.com.br'),
-     ('freguesiaguiase.sempli.com.br'),
-     ('uberabacentro.sempli.com.br'),
-     ('vilavelha.sempli.com.br'),
-     ('setorsul.uberlandiaguiase.sempli.com.br'),
-     ('tambore.barueriguiase.sempli.com.br'),
-     ('perdizes.sempli.com.br'),
-     ('setorcomercial.brasilia.sempli.com.br'),
-     ('curitibasul.sempli.com.br'),
-     ('centro.barueriguiase.sempli.com.br'),
-     ('brooklinguiase.sempli.com.br'),
-     ('centro.campograndeguiase.sempli.com.br'),
-     ('belavistaguiase.sempli.com.br'),
-     ('centro.indaiatubaguiase.sempli.com.br'),
-     ('sul.bhguiase.sempli.com.br'),
-     ('saude.sempli.com.br'),
-     ('duquedecaxias.sempli.com.br'),
-     ('balneariocamboriu.sempli.com.br'),
-     ('alphaville.barueriguiase.sempli.com.br'),
-     ('centro.mogiguacuguiase.sempli.com.br'),
-     ('sul.curitibaguiase.sempli.com.br'),
-     ('oeste.cascavelguiase.sempli.com.br'),
-     ('belavista.sempli.com.br'),
-     ('dacia.riopretoguiase.sempli.com.br'),
-     ('meier.rj.sempli.com.br'),
-     ('centro.atibaiaguiase.sempli.com.br'),
-     ('osascorc3.sempli.com.br'),
-     ('belasuica.londrina.sempli.com.br'),
-     ('maua.sempli.com.br'),
-     ('maristagoiania.sempli.com.br'),
-     ('centro.valparaisodegoias.sempli.com.br'),
-     ('riopreto.sempli.com.br'),
-     ('centro.taubateguiase.sempli.com.br'),
-     ('alicante.saoluis.sempli.com.br'),
-     ('swisspark.campinasguiase.sempli.com.br'),
-     ('santateresa.sempli.com.br'),
-     ('verde.lem.sempli.com.br'),
-     ('centro.cascavel.sempli.com.br'),
-     ('rolimdemouraguiase.sempli.com.br'),
-     ('alto.piracicabaguiase.sempli.com.br'),
-     ('saogoncaloguiase.sempli.com.br'),
-     ('centro.sumareguiase.sempli.com.br'),
-     ('lagoasantaguiase.sempli.com.br'),
-     ('ribeiraopreto.sempli.com.br'),
-     ('campinasrc6.sempli.com.br'),
-     ('alegrete.sempli.com.br'),
-     ('taubate.sempli.com.br'),
-     ('brasiliasul.sempli.com.br'),
-     ('paulista.presidenteprudente.sempli.com.br'),
-     ('itaimbibi.sempli.com.br'),
-     ('maringacentro.sempli.com.br'),
-     ('centro.teixeiradefreitas.sempli.com.br'),
-     ('centro.chapeco.sempli.com.br'),
-     ('cidademoncoes.sempli.com.br'),
-     ('brooklinnovo.sempli.com.br'),
-     ('leste.sorocaba.sempli.com.br'),
-     ('guarulhoshelper.sempli.com.br'),
-     ('limeiradigital.sempli.com.br'),
-     ('jacarepagua.sempli.com.br'),
-     ('cachoeiradosul.sempli.com.br'),
-     ('sul.itajai.sempli.com.br'),
-     ('florais.cuiaba.sempli.com.br'),
-     ('centro.taubate.sempli.com.br'),
-     ('jardimitalia.chapeco.sempli.com.br'),
-     ('botanico.curitibaguiase.sempli.com.br'),
-     ('centrosjc.sempli.com.br'),
-     ('castanhalguiase.sempli.com.br'),
-     ('coromandel.sempli.com.br'),
-     ('curitibacentro.sempli.com.br'),
-     ('praiadocantovitoriaguiase.sempli.com.br'),
-     ('umuarama.sempli.com.br'),
-     ('campolimpo.sempli.com.br'),
-     ('centrofrancaguiase.sempli.com.br'),
-     ('sul.guiasebrasilia.sempli.com.br'),
-     ('suljoinville.sempli.com.br'),
-     ('centro.linharesguiase.sempli.com.br'),
-     ('centro.palmasguiase.sempli.com.br'),
-     ('balneariocamboriuguiase.sempli.com.br'),
-     ('campolargoguiase.sempli.com.br'),
-     ('vilaolimpiaguiase.sempli.com.br'),
-     ('jockey.vilavelhaguiase.sempli.com.br'),
-     ('ituramaguiase.sempli.com.br'),
-     ('recreiodosbandeirantesguiase.sempli.com.br'),
-     ('pompeiaguiase.sempli.com.br'),
-     ('centro.portoalegreguiase.sempli.com.br'),
-     ('vilaleopoldinaguiase.sempli.com.br'),
-     ('centro.canoasguiase.sempli.com.br'),
-     ('centro.macaeguiase.sempli.com.br'),
-     ('centro.guarulhosguiase.sempli.com.br'),
-     ('cambui.campinasguiase.sempli.com.br'),
-     ('centro.belemguiase.sempli.com.br'),
-     ('jabaquaraguiase.sempli.com.br'),
-     ('tirol.natalguiase.sempli.com.br'),
-     ('centro.piracicabaguiase.sempli.com.br'),
-     ('buritis.goiania.sempli.com.br'),
-     ('centro.indaiatuba.sempli.com.br'),
-     ('igarape.bhguiase.sempli.com.br'),
-     ('dompedro.campinasguiase.sempli.com.br'),
-     ('centro.petrolinaguiase.sempli.com.br'),
-     ('aquarius.sjcguiase.sempli.com.br'),
-     ('centro.santoandreguiase.sempli.com.br'),
-     ('alphaville.salvadorguiase.sempli.com.br'),
-     ('botafogo.rjguiase.sempli.com.br'),
-     ('centro.sorocabaguiase.sempli.com.br'),
-     ('centro.maringaguiase.sempli.com.br'),
-     ('imperial.petropolisguiase.sempli.com.br'),
-     ('jardinsguiase.sempli.com.br')
-   on conflict (dominio) do nothing;
-
-   -- Habilitar Row Level Security (RLS) e permitir acesso anônimo de leitura e escrita:
-   alter table revendas enable row level security;
-   create policy "allow all" on revendas for all using (true) with check (true);
-   ===================================================================== */
-
-/* ----- DADOS LOCAIS ----- */
 const DATA = [
   ["bentogoncalves.sempli.com.br","bentogoncalvesse",38,2.71,30,144],
   ["vilaformosa.sempli.com.br","vilaformosa",34,77.58,100,202],
@@ -1010,214 +585,490 @@ const DATA = [
   ["imperial.petropolisguiase.sempli.com.br","imperialpetropol",1,0.00,10,13],
   ["jardinsguiase.sempli.com.br","jardinsguiase",1,0.00,10,13]
 ];
+const MAX_GB = Math.max(...DATA.map(r=>r[3]));
 
-/* ----- ESTADO ----- */
-const MAX_GB = Math.max(...DATA.map(r => r[3]));
-let currentTab = 'todas';
-let canceladas = {};       // { dominio: true/false } — carregado do Supabase
-let sbOk = false;          // Supabase conectado?
+/* ══ AUTH ══ */
+const anonH  = () => ({'apikey':SUPABASE_ANON,'Content-Type':'application/json'});
+const authH  = (tok) => ({'apikey':SUPABASE_ANON,'Authorization':'Bearer '+(tok||SUPABASE_ANON),'Content-Type':'application/json'});
+const dbH    = () => ({'apikey':SUPABASE_ANON,'Authorization':'Bearer '+SESSION.access_token,'Content-Type':'application/json','Prefer':'return=minimal'});
 
-/* ----- SUPABASE ----- */
-const isConfigured = SUPABASE_URL !== 'https://SEU-PROJETO.supabase.co';
+function loadSess(){ try{ const r=localStorage.getItem('sb_sess'); return r?JSON.parse(r):null; }catch{return null;} }
+function saveSess(s){ localStorage.setItem('sb_sess',JSON.stringify(s)); }
+function clearSess(){ localStorage.removeItem('sb_sess'); }
 
-function sbHeaders() {
-  return { 'apikey': SUPABASE_ANON, 'Authorization': 'Bearer ' + SUPABASE_ANON, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' };
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const btn=document.getElementById('btn-login');
+  setLoginErr('');
+  if(!email||!pass){setLoginErr('Preencha e-mail e senha.');return;}
+  btn.disabled=true; btn.textContent='Entrando…';
+  try{
+    const r=await fetch(SUPABASE_URL+'/auth/v1/token?grant_type=password',{
+      method:'POST', headers:anonH(), body:JSON.stringify({email,password:pass})
+    });
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.error_description||d.msg||'Credenciais inválidas');
+    SESSION=d; saveSess(d);
+    await afterLogin();
+  }catch(e){
+    setLoginErr(e.message);
+    btn.disabled=false; btn.textContent='Entrar';
+  }
 }
 
-async function loadCanceladas() {
-  if (!isConfigured) {
-    document.getElementById('setup-banner').classList.add('show');
-    setDbStatus('error', 'não configurado');
+function setLoginErr(msg){
+  const el=document.getElementById('login-err');
+  el.textContent=msg; el.className=msg?'show':'';
+}
+
+async function afterLogin(){
+  try{
+    const r=await fetch(SUPABASE_URL+'/rest/v1/profiles?id=eq.'+SESSION.user.id+'&select=*',{
+      headers:authH(SESSION.access_token)
+    });
+    const rows=await r.json();
+    if(!rows.length) throw new Error('Perfil não encontrado. Contate o administrador.');
+    PROFILE=rows[0];
+  }catch(e){
+    setLoginErr(e.message);
+    clearSess(); SESSION=null;
+    const btn=document.getElementById('btn-login');
+    btn.disabled=false; btn.textContent='Entrar';
     return;
   }
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/revendas?select=dominio,cancelada`, { headers: sbHeaders() });
-    if (!res.ok) throw new Error(res.status);
-    const rows = await res.json();
-    canceladas = {};
-    rows.forEach(r => { canceladas[r.dominio] = r.cancelada; });
-    sbOk = true;
-    setDbStatus('connected', 'conectado');
-    updateMetrics();
-    render();
-  } catch(e) {
-    setDbStatus('error', 'erro de conexão');
-    console.error('Supabase error:', e);
-    showToast('Não foi possível conectar ao Supabase. Verifique a URL e a chave.', 'err');
+  mountApp();
+}
+
+function mountApp(){
+  document.getElementById('screen-login').style.display='none';
+  document.getElementById('screen-app').classList.add('show');
+  const ini=(PROFILE.nome||PROFILE.email||'?').slice(0,2).toUpperCase();
+  document.getElementById('user-av').textContent=ini;
+  document.getElementById('user-name').textContent=PROFILE.nome||PROFILE.email.split('@')[0];
+  const rb=document.getElementById('user-role-badge');
+  rb.textContent=PROFILE.role; rb.className='role-badge role-'+PROFILE.role;
+  if(PROFILE.role==='master'){
+    document.getElementById('nav-logs').classList.remove('hidden');
+    document.getElementById('nav-users').classList.remove('hidden');
+  }
+  initDates();
+  loadCanceladas();
+}
+
+async function doLogout(){
+  try{ await fetch(SUPABASE_URL+'/auth/v1/logout',{method:'POST',headers:authH(SESSION.access_token)}); }catch{}
+  clearSess(); SESSION=null; PROFILE=null;
+  document.getElementById('screen-app').classList.remove('show');
+  document.getElementById('screen-login').style.display='flex';
+  document.getElementById('login-pass').value='';
+}
+
+/* ══ NAVEGAÇÃO ══ */
+function goScreen(name,tabEl){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sc-'+name).classList.add('active');
+  if(tabEl) tabEl.classList.add('active');
+  if(name==='logs')  loadLogs();
+  if(name==='users') loadUsers();
+}
+
+/* ══ REVENDAS ══ */
+async function loadCanceladas(){
+  try{
+    const r=await fetch(SUPABASE_URL+'/rest/v1/revendas?select=dominio,cancelada',{headers:dbH()});
+    if(!r.ok) throw new Error(r.status);
+    const rows=await r.json();
+    canceladas={};
+    rows.forEach(r=>{canceladas[r.dominio]=r.cancelada;});
+    setDb('connected','conectado');
+    updateMetrics(); initAlerts(); render();
+  }catch(e){
+    setDb('error','erro');
+    showToast('Erro ao carregar dados.','err');
   }
 }
 
-async function toggleCancelada(dominio, btnEl) {
-  if (!isConfigured) { showToast('Configure o Supabase primeiro.', 'err'); return; }
-  const atual = !!canceladas[dominio];
-  const novo = !atual;
+const canEdit=()=>PROFILE&&(PROFILE.role==='master'||PROFILE.role==='editor');
+
+async function toggleCancelada(dominio,btnEl){
+  if(!canEdit()){showToast('Sem permissão para esta ação.','err');return;}
+  const novo=!canceladas[dominio];
   btnEl.classList.add('loading');
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/revendas?dominio=eq.${encodeURIComponent(dominio)}`, {
-      method: 'PATCH',
-      headers: sbHeaders(),
-      body: JSON.stringify({ cancelada: novo })
+  try{
+    const r=await fetch(SUPABASE_URL+'/rest/v1/revendas?dominio=eq.'+encodeURIComponent(dominio),{
+      method:'PATCH', headers:dbH(), body:JSON.stringify({cancelada:novo})
     });
-    if (!res.ok) throw new Error(res.status);
-    canceladas[dominio] = novo;
-    showToast(novo ? `${dominio} marcada como cancelada` : `${dominio} reativada`, 'ok');
-    updateMetrics();
-    render();
-  } catch(e) {
-    showToast('Erro ao salvar. Tente novamente.', 'err');
-    console.error(e);
-  } finally {
+    if(!r.ok) throw new Error(r.status);
+    // Registrar no audit_log
+    await fetch(SUPABASE_URL+'/rest/v1/audit_log',{
+      method:'POST',
+      headers:{...dbH(),'Prefer':'return=minimal'},
+      body:JSON.stringify({
+        user_id:SESSION.user.id,
+        user_email:PROFILE.email,
+        user_nome:PROFILE.nome||PROFILE.email,
+        acao:novo?'cancelou':'reativou',
+        dominio
+      })
+    });
+    canceladas[dominio]=novo;
+    showToast(novo?dominio+' cancelada':dominio+' reativada','ok');
+    updateMetrics(); render();
+  }catch(e){
+    showToast('Erro ao salvar. Tente novamente.','err');
+  }finally{
     btnEl.classList.remove('loading');
   }
 }
 
-function setDbStatus(state, label) {
-  const dot = document.getElementById('db-dot');
-  const lbl = document.getElementById('db-label');
-  dot.className = 'db-dot ' + state;
-  lbl.textContent = label;
+function setDb(state,label){
+  document.getElementById('db-dot').className='db-dot '+state;
+  document.getElementById('db-label').textContent=label;
 }
 
-/* ----- HELPERS ----- */
-function isMigrar(r){ return r[3] > 50 || r[2] >= 20; }
-function isCobranca(r){ return r[3] > 50; }
-function isCancelada(r){ return !!canceladas[r[0]]; }
-function getColor(gb){ if(gb>100) return 'c-red'; if(gb>=50) return 'c-amber'; if(gb>=20) return 'c-blue'; return 'c-green'; }
-
-/* ----- TOAST ----- */
-let toastTimer;
-function showToast(msg, type) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'show ' + (type || '');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { el.className = ''; }, 3000);
+/* ══ LOGS ══ */
+async function loadLogs(){
+  if(PROFILE.role!=='master') return;
+  try{
+    const r=await fetch(SUPABASE_URL+'/rest/v1/audit_log?select=*&order=created_at.desc&limit=1000',{headers:dbH()});
+    if(!r.ok) throw new Error(r.status);
+    LOGS=await r.json();
+    renderLogs();
+  }catch(e){showToast('Erro ao carregar logs.','err');}
 }
 
-/* ----- TABS / SORT ----- */
-function setTab(t, el) {
-  currentTab = t;
-  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  render();
-}
-
-function sortBy(key) {
-  document.getElementById('sort').value = key.replace(/_asc$/, '_asc').replace(/_desc$/, '_desc');
-  render();
-}
-
-/* ----- RENDER ----- */
-function render() {
-  const q = document.getElementById('search').value.toLowerCase();
-  const minGb = parseFloat(document.getElementById('min-gb').value) || 0;
-  const s = document.getElementById('sort').value;
-
-  let data = DATA.filter(r => {
-    if(currentTab === 'migrar' && !isMigrar(r)) return false;
-    if(currentTab === 'cobranca' && !isCobranca(r)) return false;
-    if(currentTab === 'canceladas' && !isCancelada(r)) return false;
-    if(q && !r[0].includes(q) && !r[1].includes(q)) return false;
-    if(r[3] < minGb) return false;
+function renderLogs(){
+  const q=(document.getElementById('log-search')?.value||''). toLowerCase();
+  const ac=document.getElementById('log-acao')?.value||'';
+  const data=LOGS.filter(l=>{
+    if(ac&&l.acao!==ac) return false;
+    if(q&&!l.user_email?.toLowerCase().includes(q)&&!l.user_nome?.toLowerCase().includes(q)&&!l.dominio?.toLowerCase().includes(q)) return false;
     return true;
   });
-
-  data.sort((a,b) => {
-    if(s==='espaco_desc') return b[3]-a[3];
-    if(s==='espaco_asc') return a[3]-b[3];
-    if(s==='contas_desc') return b[2]-a[2];
-    if(s==='contas_asc') return a[2]-b[2];
-    if(s==='subtotal_desc') return b[5]-a[5];
-    if(s==='dominio'||s==='owner') return a[0].localeCompare(b[0]);
-    return 0;
-  });
-
-  document.getElementById('count-info').textContent = `${data.length} de ${DATA.length} revendas`;
-
-  const tbody = document.getElementById('tbody');
-  if(!data.length){
-    tbody.innerHTML = '<tr><td colspan="6"><div class="empty">Nenhum resultado encontrado.</div></td></tr>';
-    return;
-  }
-
-  tbody.innerHTML = data.map(r => {
-    const [dom, owner, contas, gb, preco, sub] = r;
-    const cancelada = isCancelada(r);
-    const pct = Math.min(100,(gb/MAX_GB)*100).toFixed(1);
-    const col = getColor(gb);
-    const migBadge = isMigrar(r) ? '<span class="badge badge-red">migrar</span>' : '';
-    const cobBadge = isCobranca(r) ? '<span class="badge badge-amber">&gt;50GB</span>' : '';
-    const manyBadge = contas >= 20 ? '<span class="badge badge-blue">muitas contas</span>' : '';
-    const cancelBadge = cancelada ? '<span class="badge badge-gray">cancelada</span>' : '';
-    const rowClass = cancelada ? 'row-cancelada' : '';
-    const btnClass = cancelada ? 'cancel-btn is-cancelada' : 'cancel-btn';
-    const btnTitle = cancelada ? 'Reativar revenda' : 'Marcar como cancelada';
-    const btnIcon = cancelada
-      ? `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3.5 3.5L13 4.5"/></svg>`
-      : `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="4" y1="4" x2="12" y2="12"/><line x1="12" y1="4" x2="4" y2="12"/></svg>`;
-
-    return `<tr class="${rowClass}">
-      <td class="num">
-        <button class="${btnClass}" title="${btnTitle}" onclick="toggleCancelada('${dom.replace(/'/g,"\\'")}', this)">${btnIcon}</button>
-      </td>
-      <td class="domain-col">
-        <span class="domain-text" title="${dom}">${dom}</span>
-        <span class="owner-text">${owner}</span>
-        <div class="badges">${cancelBadge}</div>
-      </td>
-      <td class="num">${contas}</td>
-      <td>
-        <div class="bar-cell">
-          <div class="bar-track"><div class="bar-fill ${col}" style="width:${pct}%"></div></div>
-          <span class="gb-num">${gb.toFixed(2)}</span>
-        </div>
-      </td>
-      <td class="num sub-cell">R$ ${sub.toFixed(0)}</td>
-      <td class="num"><div class="badges" style="justify-content:flex-end">${migBadge}${cobBadge}${manyBadge}</div></td>
+  document.getElementById('log-count').textContent=data.length+' registros';
+  const tb=document.getElementById('log-tbody');
+  if(!data.length){tb.innerHTML='<tr><td colspan="4"><div class="empty">Nenhum log encontrado.</div></td></tr>';return;}
+  tb.innerHTML=data.map(l=>{
+    const dt=new Date(l.created_at);
+    const ds=dt.toLocaleDateString('pt-BR')+' '+dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    const ac=l.acao==='cancelou'?'<span class="acao-cancelou">✕ cancelou</span>':'<span class="acao-reativou">✓ reativou</span>';
+    return `<tr>
+      <td><span class="log-user" style="color:var(--text)">${l.user_nome||l.user_email||'—'}</span><br><span class="log-user">${l.user_email||''}</span></td>
+      <td>${ac}</td>
+      <td class="log-domain">${l.dominio}</td>
+      <td class="log-date">${ds}</td>
     </tr>`;
   }).join('');
 }
 
-/* ----- METRICS ----- */
+/* ══ USUÁRIOS ══ */
+async function loadUsers(){
+  if(PROFILE.role!=='master') return;
+  try{
+    const r=await fetch(SUPABASE_URL+'/rest/v1/profiles?select=*&order=created_at.asc',{headers:dbH()});
+    if(!r.ok) throw new Error(r.status);
+    const users=await r.json();
+    document.getElementById('users-count').textContent=users.length+' usuários';
+    const list=document.getElementById('users-list');
+    if(!users.length){list.innerHTML='<div class="empty">Nenhum usuário cadastrado.</div>';return;}
+    list.innerHTML=users.map(u=>{
+      const ini=(u.nome||u.email||'?').slice(0,2).toUpperCase();
+      const isSelf=u.id===PROFILE.id;
+      return `<div class="user-row">
+        <div class="user-avatar-sm">${ini}</div>
+        <div class="user-row-info">
+          <div class="user-row-email">${u.email||'—'}</div>
+          <div class="user-row-meta">${u.nome||''} · <span class="role-badge role-${u.role}">${u.role}</span></div>
+        </div>
+        ${isSelf?'<span style="font-size:10px;color:var(--muted);font-family:var(--mono)">você</span>':`<button class="btn-remove" onclick="confirmRemove('${u.id}','${(u.email||''). replace(/'/g,"\'")}')">Remover</button>`}
+      </div>`;
+    }).join('');
+  }catch(e){showToast('Erro ao carregar usuários.','err');}
+}
+
+async function addUser(){
+  const email = document.getElementById('nu-email').value.trim();
+  const nome  = document.getElementById('nu-nome').value.trim();
+  const senha = document.getElementById('nu-senha').value;
+  const role  = document.getElementById('nu-role').value;
+  const msg   = document.getElementById('add-user-msg');
+  const btn   = document.getElementById('btn-add-user');
+  msg.className = 'add-user-msg';
+
+  if (!email) { msg.className='add-user-msg err'; msg.textContent='Informe o e-mail.'; return; }
+  if (!senha || senha.length < 6) { msg.className='add-user-msg err'; msg.textContent='Senha deve ter no mínimo 6 caracteres.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Adicionando…';
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/invite-users`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + SESSION.access_token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, nome, role, senha })
+    });
+
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error);
+
+    msg.className = 'add-user-msg ok';
+    msg.textContent = '✓ ' + data.message + '. Já pode fazer login.';
+    document.getElementById('nu-email').value = '';
+    document.getElementById('nu-nome').value = '';
+    document.getElementById('nu-senha').value = '';
+    loadUsers();
+
+  } catch(e) {
+    msg.className = 'add-user-msg err';
+    msg.textContent = e.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Adicionar usuário';
+  }
+}
+
+function confirmRemove(uid,email){
+  document.getElementById('modal-title').textContent='Remover usuário';
+  document.getElementById('modal-body').textContent='Remover "'+email+'"? O acesso será revogado imediatamente.';
+  document.getElementById('modal-ok').onclick=()=>{closeModal();removeUser(uid);};
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal(){ document.getElementById('modal-overlay').classList.remove('show'); }
+
+async function removeUser(uid){
+  try{
+    const r=await fetch(SUPABASE_URL+'/rest/v1/profiles?id=eq.'+uid,{method:'DELETE',headers:dbH()});
+    if(!r.ok) throw new Error(r.status);
+    showToast('Usuário removido com sucesso.','ok'); loadUsers();
+  }catch(e){showToast('Erro ao remover usuário.','err');}
+}
+
+/* ══ DASHBOARD HELPERS ══ */
+function isMigrar(r){return r[3]>50||r[2]>=20;}
+function isCobranca(r){return r[3]>50;}
+function isCancelada(r){return !!canceladas[r[0]];}
+function getColor(gb){if(gb>100)return 'c-red';if(gb>=50)return 'c-amber';if(gb>=20)return 'c-blue';return 'c-green';}
+
+function setTab(t,el){
+  currentTab=t;
+  const btn=document.getElementById('btn-export-pdf');
+  if(btn) btn.style.display=t==='canceladas'?'inline-flex':'none';
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active'); render();
+}
+function sortBy(key){ document.getElementById('sort').value=key; render(); }
+
+function render(){
+  const q=document.getElementById('search').value.toLowerCase();
+  const minGb=parseFloat(document.getElementById('min-gb').value)||0;
+  const s=document.getElementById('sort').value;
+  let data=DATA.filter(r=>{
+    if(currentTab==='migrar'&&!isMigrar(r)) return false;
+    if(currentTab==='cobranca'&&!isCobranca(r)) return false;
+    if(currentTab==='canceladas'&&!isCancelada(r)) return false;
+    if(q&&!r[0].includes(q)&&!r[1].includes(q)) return false;
+    if(r[3]<minGb) return false;
+    return true;
+  });
+  data.sort((a,b)=>{
+    if(s==='espaco_desc') return b[3]-a[3]; if(s==='espaco_asc') return a[3]-b[3];
+    if(s==='contas_desc') return b[2]-a[2]; if(s==='contas_asc') return a[2]-b[2];
+    if(s==='subtotal_desc') return b[5]-a[5];
+    return a[0].localeCompare(b[0]);
+  });
+  document.getElementById('count-info').textContent=data.length+' de '+DATA.length+' revendas';
+  const tbody=document.getElementById('tbody');
+  if(!data.length){tbody.innerHTML='<tr><td colspan="6"><div class="empty">Nenhum resultado encontrado.</div></td></tr>';return;}
+  tbody.innerHTML=data.map(r=>{
+    const[dom,owner,contas,gb,preco,sub]=r;
+    const cancelada=isCancelada(r);
+    const pct=Math.min(100,(gb/MAX_GB)*100).toFixed(1);
+    const col=getColor(gb);
+    const migB=isMigrar(r)?'<span class="badge badge-red">migrar</span>':''
+    const cobB=isCobranca(r)?'<span class="badge badge-amber">&gt;50GB</span>':''
+    const mnyB=contas>=20?'<span class="badge badge-blue">muitas contas</span>':''
+    const canB=cancelada?'<span class="badge badge-gray">cancelada</span>':''
+    const locked=!canEdit();
+    const bcls=['cancel-btn',cancelada?'is-cancelada':'',locked?'locked':''].filter(Boolean).join(' ');
+    const btit=locked?'Sem permissão':(cancelada?'Reativar':'Cancelar');
+    const bico=cancelada?'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3.5 3.5L13 4.5"/></svg>':'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="4" y1="4" x2="12" y2="12"/><line x1="12" y1="4" x2="4" y2="12"/></svg>';
+    const sd=dom.replace(/'/g,"\\'");
+    return `<tr class="${cancelada?'row-cancelada':''}">
+      <td style="text-align:center"><button class="${bcls}" title="${btit}" onclick="toggleCancelada('${sd}',this)">${bico}</button></td>
+      <td class="domain-col">
+        <span class="domain-text" title="${dom}">${dom}</span>
+        <span class="owner-text">${owner}</span>
+        <div class="badges">${canB}</div>
+      </td>
+      <td style="text-align:center;font-family:var(--mono);font-size:12px">${contas}</td>
+      <td><div class="bar-cell"><div class="bar-track"><div class="bar-fill ${col}" style="width:${pct}%"></div></div><span class="gb-num">${gb.toFixed(2)}</span></div></td>
+      <td style="text-align:right;font-family:var(--mono);font-size:12px">R$ ${sub.toFixed(0)}</td>
+      <td style="text-align:right"><div class="badges" style="justify-content:flex-end">${migB}${cobB}${mnyB}</div></td>
+    </tr>`;
+  }).join('');
+}
+
 function updateMetrics(){
-  document.getElementById('m-total').textContent = DATA.length;
-  document.getElementById('m-migrar').textContent = DATA.filter(isMigrar).length;
-  document.getElementById('m-cobr').textContent = DATA.filter(isCobranca).length;
-  const tot = DATA.reduce((s,r)=>s+r[3],0);
-  document.getElementById('m-gb').textContent = tot.toFixed(0) + ' GB';
-  document.getElementById('m-canceladas').textContent = Object.values(canceladas).filter(Boolean).length;
+  document.getElementById('m-total').textContent=DATA.length;
+  document.getElementById('m-migrar').textContent=DATA.filter(isMigrar).length;
+  document.getElementById('m-cobr').textContent=DATA.filter(isCobranca).length;
+  document.getElementById('m-canceladas').textContent=Object.values(canceladas).filter(Boolean).length;
+  document.getElementById('m-gb').textContent=DATA.reduce((s,r)=>s+r[3],0).toFixed(0)+' GB';
 }
 
-/* ----- ALERTS ----- */
 function initAlerts(){
-  const byGb = [...DATA].sort((a,b)=>b[3]-a[3]);
-  document.getElementById('alert-migrar').innerHTML = byGb.slice(0,5).map(r =>
-    `<li><span class="domain">${r[0]}</span><span class="val">${r[3].toFixed(1)} GB · ${r[2]} contas</span></li>`
-  ).join('');
-  const cobr = DATA.filter(isCobranca).sort((a,b)=>b[3]-a[3]);
-  document.getElementById('alert-cobr').innerHTML = cobr.map(r =>
-    `<li><span class="domain">${r[0]}</span><span class="val">${r[3].toFixed(1)} GB</span></li>`
-  ).join('');
-  const byContas = [...DATA].sort((a,b)=>b[2]-a[2]);
-  document.getElementById('alert-migrar-num-contas').innerHTML = byContas.slice(0,5).map(r =>
-    `<li><span class="domain">${r[0]}</span><span class="val">${r[2]} contas · ${r[3].toFixed(1)} GB</span></li>`
-  ).join('');
+  const byGb=[...DATA].sort((a,b)=>b[3]-a[3]);
+  document.getElementById('alert-migrar').innerHTML=byGb.slice(0,5).map(r=>`<li><span class="domain">${r[0]}</span><span class="val">${r[3].toFixed(1)} GB · ${r[2]} contas</span></li>`).join('');
+  document.getElementById('alert-cobr').innerHTML=DATA.filter(isCobranca).sort((a,b)=>b[3]-a[3]).map(r=>`<li><span class="domain">${r[0]}</span><span class="val">${r[3].toFixed(1)} GB</span></li>`).join('');
+  document.getElementById('alert-migrar-num-contas').innerHTML=[...DATA].sort((a,b)=>b[2]-a[2]).slice(0,5).map(r=>`<li><span class="domain">${r[0]}</span><span class="val">${r[2]} contas · ${r[3].toFixed(1)} GB</span></li>`).join('');
 }
 
-/* ----- DATES ----- */
 function initDates(){
-  const d = new Date();
-  const fmt = d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
-  document.getElementById('hdate').textContent = fmt;
-  document.getElementById('fdate').textContent = fmt;
+  const fmt=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  document.getElementById('hdate').textContent=fmt;
+  document.getElementById('fdate').textContent=fmt;
 }
 
-/* ----- BOOT ----- */
-initDates();
-updateMetrics();
-initAlerts();
-render();
-loadCanceladas();
+/* ── TOAST ── */
+let ttimer;
+function showToast(msg,type){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='show '+(type||'');
+  clearTimeout(ttimer); ttimer=setTimeout(()=>el.className='',3200);
+}
+
+/* ── KEYBOARD ── */
+document.getElementById('login-pass').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+document.getElementById('login-email').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('login-pass').focus(); });
+
+/* ── EXPORT PDF ── */
+function exportCanceladasPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+  const s = document.getElementById('sort').value;
+  const q = document.getElementById('search').value.toLowerCase();
+  const minGb = parseFloat(document.getElementById('min-gb').value) || 0;
+
+  let data = DATA.filter(r => {
+    if (!isCancelada(r)) return false;
+    if (q && !r[0].includes(q) && !r[1].includes(q)) return false;
+    if (r[3] < minGb) return false;
+    return true;
+  });
+
+  data.sort((a, b) => {
+    if (s === 'espaco_desc') return b[3] - a[3];
+    if (s === 'espaco_asc') return a[3] - b[3];
+    if (s === 'contas_desc') return b[2] - a[2];
+    if (s === 'contas_asc') return a[2] - b[2];
+    if (s === 'subtotal_desc') return b[5] - a[5];
+    if (s === 'dominio' || s === 'owner') return a[0].localeCompare(b[0]);
+    return 0;
+  });
+
+  const date = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+  // Header
+  doc.setFillColor(19, 22, 29);
+  doc.rect(0, 0, 297, 20, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(13);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Revendas Canceladas — Sempli / HostGuiase', 14, 13);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(160, 160, 180);
+  doc.text(`Gerado em ${date} · ${data.length} revenda(s)`, 297 - 14, 13, { align: 'right' });
+
+  const statusLabel = r => {
+    if (r[3] > 100) return 'Migrar';
+    if (r[3] > 50)  return '>50 GB';
+    if (r[2] >= 20) return 'Muitas contas';
+    return '—';
+  };
+
+  const rows = data.map(r => [
+    r[0],
+    r[1],
+    r[2],
+    r[3].toFixed(2),
+    'R$ ' + r[4].toFixed(0),
+    'R$ ' + r[5].toFixed(0),
+    statusLabel(r)
+  ]);
+
+  doc.autoTable({
+    startY: 24,
+    head: [['Domínio', 'Owner', 'Contas', 'Espaço (GB)', 'Preço', 'Subtotal', 'Status']],
+    body: rows,
+    styles: {
+      fontSize: 8.5,
+      cellPadding: { top: 3, bottom: 3, left: 4, right: 4 },
+      font: 'helvetica',
+      textColor: [220, 220, 230],
+      fillColor: [19, 22, 29],
+      lineColor: [40, 44, 58],
+      lineWidth: 0.2,
+    },
+    headStyles: {
+      fillColor: [26, 30, 40],
+      textColor: [140, 145, 170],
+      fontStyle: 'bold',
+      fontSize: 8,
+    },
+    alternateRowStyles: {
+      fillColor: [22, 26, 36],
+    },
+    columnStyles: {
+      0: { cellWidth: 80 },
+      1: { cellWidth: 38 },
+      2: { halign: 'right', cellWidth: 18 },
+      3: { halign: 'right', cellWidth: 24 },
+      4: { halign: 'right', cellWidth: 22 },
+      5: { halign: 'right', cellWidth: 22 },
+      6: { halign: 'center', cellWidth: 24 },
+    },
+    didParseCell: function (data) {
+      if (data.section === 'body' && data.column.index === 6) {
+        const val = data.cell.raw;
+        if (val === 'Migrar') data.cell.styles.textColor = [220, 100, 100];
+        else if (val === '>50 GB') data.cell.styles.textColor = [230, 160, 60];
+        else if (val === 'Muitas contas') data.cell.styles.textColor = [100, 160, 240];
+      }
+    },
+    margin: { left: 14, right: 14 },
+  });
+
+  // Footer
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(8);
+    doc.setTextColor(80, 85, 105);
+    doc.text(`Página ${i} de ${pageCount}`, 297 / 2, 205, { align: 'center' });
+  }
+
+  doc.save(`canceladas_${date.replace(/\//g, '-')}.pdf`);
+}
+
+/* ── BOOT ── */
+(async function(){
+  const s=loadSess();
+  if(s?.access_token){
+    try{
+      const r=await fetch(SUPABASE_URL+'/auth/v1/user',{headers:authH(s.access_token)});
+      if(r.ok){ SESSION=s; await afterLogin(); return; }
+    }catch{}
+    clearSess();
+  }
+  document.getElementById('screen-login').style.display='flex';
+})();
 </script>
 </body>
 </html>
